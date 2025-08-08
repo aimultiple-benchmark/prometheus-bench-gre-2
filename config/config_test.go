@@ -1674,6 +1674,10 @@ var expectedConf = &Config{
 		TSDBConfig: &TSDBConfig{
 			OutOfOrderTimeWindow:     30 * time.Minute.Milliseconds(),
 			OutOfOrderTimeWindowFlag: model.Duration(30 * time.Minute),
+			Retention: &TSDBRetentionConfig{
+				Time: model.Duration(24 * time.Hour),
+				Size: 1 * units.GiB,
+			},
 		},
 	},
 	TracingConfig: TracingConfig{
