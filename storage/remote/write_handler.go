@@ -670,6 +670,7 @@ func (rw *rwExporter) ConsumeMetrics(ctx context.Context, md pmetric.Metrics) er
 	combinedAppender := otlptranslator.NewCombinedAppender(app, rw.logger, rw.ingestCTZeroSample, rw.metrics)
 	converter := otlptranslator.NewPrometheusConverter(combinedAppender)
 	annots, err := converter.FromMetrics(ctx, md, otlptranslator.Settings{
+<<<<<<< HEAD
 		AddMetricSuffixes:                 otlpCfg.TranslationStrategy.ShouldAddSuffixes(),
 		AllowUTF8:                         !otlpCfg.TranslationStrategy.ShouldEscape(),
 		PromoteResourceAttributes:         otlptranslator.NewPromoteResourceAttributes(otlpCfg),
@@ -679,6 +680,19 @@ func (rw *rwExporter) ConsumeMetrics(ctx context.Context, md pmetric.Metrics) er
 		AllowDeltaTemporality:             rw.allowDeltaTemporality,
 		LookbackDelta:                     rw.lookbackDelta,
 		EnableTypeAndUnitLabels:           rw.enableTypeAndUnitLabels,
+=======
+		AddMetricSuffixes:                    otlpCfg.TranslationStrategy.ShouldAddSuffixes(),
+		AllowUTF8:                            !otlpCfg.TranslationStrategy.ShouldEscape(),
+		PromoteResourceAttributes:            otlptranslator.NewPromoteResourceAttributes(otlpCfg),
+		KeepIdentifyingResourceAttributes:    otlpCfg.KeepIdentifyingResourceAttributes,
+		ConvertHistogramsToNHCB:              otlpCfg.ConvertHistogramsToNHCB,
+		PromoteScopeMetadata:                 otlpCfg.PromoteScopeMetadata,
+		AllowDeltaTemporality:                rw.allowDeltaTemporality,
+		LookbackDelta:                        rw.lookbackDelta,
+		EnableTypeAndUnitLabels:              rw.enableTypeAndUnitLabels,
+		LabelNameUnderscoreSanitization:      otlpCfg.LabelNameUnderscoreSanitization,
+		LabelNamePreserveMultipleUnderscores: otlpCfg.LabelNamePreserveMultipleUnderscores,
+>>>>>>> ef42c088b (OTLP: Add configuration parameters to control label name translation (#17345))
 	})
 
 	defer func() {

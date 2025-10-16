@@ -68,6 +68,7 @@ func TestCreateAttributes(t *testing.T) {
 	attrs.PutStr("metric-attr-other", "metric value other")
 
 	testCases := []struct {
+<<<<<<< HEAD
 		name                         string
 		scope                        scope
 		promoteAllResourceAttributes bool
@@ -76,6 +77,20 @@ func TestCreateAttributes(t *testing.T) {
 		ignoreResourceAttributes     []string
 		ignoreAttrs                  []string
 		expectedLabels               labels.Labels
+=======
+		name                                 string
+		resource                             pcommon.Resource
+		attrs                                pcommon.Map
+		scope                                scope
+		promoteAllResourceAttributes         bool
+		promoteResourceAttributes            []string
+		promoteScope                         bool
+		ignoreResourceAttributes             []string
+		ignoreAttrs                          []string
+		labelNameUnderscoreSanitization      bool
+		labelNamePreserveMultipleUnderscores bool
+		expectedLabels                       labels.Labels
+>>>>>>> ef42c088b (OTLP: Add configuration parameters to control label name translation (#17345))
 	}{
 		{
 			name:                      "Successful conversion without resource attribute promotion and without scope promotion",
@@ -251,6 +266,124 @@ func TestCreateAttributes(t *testing.T) {
 				"otel_scope_attr2", "value2",
 			),
 		},
+<<<<<<< HEAD
+=======
+		// Label sanitization test cases
+		{
+			name:                                 "Underscore sanitization enabled - prepends key_ to labels starting with single _",
+			resource:                             resourceWithUnderscores,
+			attrs:                                attrsWithUnderscores,
+			promoteResourceAttributes:            []string{"_private"},
+			labelNameUnderscoreSanitization:      true,
+			labelNamePreserveMultipleUnderscores: true,
+			expectedLabels: labels.FromStrings(
+				"__name__", "test_metric",
+				"instance", "service ID",
+				"job", "service name",
+				"key_private", "private value",
+				"key_metric_private", "private metric",
+				"metric___multi", "multi metric",
+			),
+		},
+		{
+			name:                                 "Underscore sanitization disabled - keeps labels with _ as-is",
+			resource:                             resourceWithUnderscores,
+			attrs:                                attrsWithUnderscores,
+			promoteResourceAttributes:            []string{"_private"},
+			labelNameUnderscoreSanitization:      false,
+			labelNamePreserveMultipleUnderscores: true,
+			expectedLabels: labels.FromStrings(
+				"__name__", "test_metric",
+				"instance", "service ID",
+				"job", "service name",
+				"_private", "private value",
+				"_metric_private", "private metric",
+				"metric___multi", "multi metric",
+			),
+		},
+		{
+			name:                                 "Multiple underscores preserved - keeps consecutive underscores",
+			resource:                             resourceWithUnderscores,
+			attrs:                                attrsWithUnderscores,
+			promoteResourceAttributes:            []string{"label___multi"},
+			labelNameUnderscoreSanitization:      false,
+			labelNamePreserveMultipleUnderscores: true,
+			expectedLabels: labels.FromStrings(
+				"__name__", "test_metric",
+				"instance", "service ID",
+				"job", "service name",
+				"label___multi", "multi value",
+				"_metric_private", "private metric",
+				"metric___multi", "multi metric",
+			),
+		},
+		{
+			name:                                 "Multiple underscores collapsed - collapses to single underscore",
+			resource:                             resourceWithUnderscores,
+			attrs:                                attrsWithUnderscores,
+			promoteResourceAttributes:            []string{"label___multi"},
+			labelNameUnderscoreSanitization:      false,
+			labelNamePreserveMultipleUnderscores: false,
+			expectedLabels: labels.FromStrings(
+				"__name__", "test_metric",
+				"instance", "service ID",
+				"job", "service name",
+				"label_multi", "multi value",
+				"_metric_private", "private metric",
+				"metric_multi", "multi metric",
+			),
+		},
+		{
+			name:                                 "Both sanitization options enabled",
+			resource:                             resourceWithUnderscores,
+			attrs:                                attrsWithUnderscores,
+			promoteResourceAttributes:            []string{"_private", "label___multi"},
+			labelNameUnderscoreSanitization:      true,
+			labelNamePreserveMultipleUnderscores: true,
+			expectedLabels: labels.FromStrings(
+				"__name__", "test_metric",
+				"instance", "service ID",
+				"job", "service name",
+				"key_private", "private value",
+				"label___multi", "multi value",
+				"key_metric_private", "private metric",
+				"metric___multi", "multi metric",
+			),
+		},
+		{
+			name:                                 "Both sanitization options disabled",
+			resource:                             resourceWithUnderscores,
+			attrs:                                attrsWithUnderscores,
+			promoteResourceAttributes:            []string{"_private", "label___multi"},
+			labelNameUnderscoreSanitization:      false,
+			labelNamePreserveMultipleUnderscores: false,
+			expectedLabels: labels.FromStrings(
+				"__name__", "test_metric",
+				"instance", "service ID",
+				"job", "service name",
+				"_private", "private value",
+				"label_multi", "multi value",
+				"_metric_private", "private metric",
+				"metric_multi", "multi metric",
+			),
+		},
+		{
+			name:                                 "Reserved labels (starting with __) are never modified",
+			resource:                             resourceWithUnderscores,
+			attrs:                                attrsWithUnderscores,
+			promoteResourceAttributes:            []string{"__reserved__"},
+			labelNameUnderscoreSanitization:      true,
+			labelNamePreserveMultipleUnderscores: false,
+			expectedLabels: labels.FromStrings(
+				"__name__", "test_metric",
+				"instance", "service ID",
+				"job", "service name",
+				"__reserved__", "reserved value",
+				"key_metric_private", "private metric",
+				"metric_multi", "multi metric",
+			),
+		},
+>>>>>>> ef42c088b (OTLP: Add configuration parameters to control label name translation (#17345))
 	}
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
@@ -261,7 +394,13 @@ func TestCreateAttributes(t *testing.T) {
 					PromoteResourceAttributes:    tc.promoteResourceAttributes,
 					IgnoreResourceAttributes:     tc.ignoreResourceAttributes,
 				}),
+<<<<<<< HEAD
 				PromoteScopeMetadata: tc.promoteScope,
+=======
+				PromoteScopeMetadata:                 tc.promoteScope,
+				LabelNameUnderscoreSanitization:      tc.labelNameUnderscoreSanitization,
+				LabelNamePreserveMultipleUnderscores: tc.labelNamePreserveMultipleUnderscores,
+>>>>>>> ef42c088b (OTLP: Add configuration parameters to control label name translation (#17345))
 			}
 			lbls, err := c.createAttributes(resource, attrs, tc.scope, settings, tc.ignoreAttrs, false, Metadata{}, model.MetricNameLabel, "test_metric")
 			require.NoError(t, err)
