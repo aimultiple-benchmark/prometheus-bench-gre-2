@@ -1,7 +1,21 @@
 # Changelog
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 ## main / unreleased
+=======
+## 3.7.2 / 2025-10-22
+
+* [BUGFIX] AWS SD: Fix AWS SDK v2 credentials handling for EC2 and Lightsail discovery. #17355
+* [BUGFIX] AWS SD: Load AWS region from IMDS when not set. #17376
+* [BUGFIX] Relabeling: Fix `labelmap` action validation with the legacy metric name validation scheme. #17372
+* [BUGFIX] PromQL: Fix parsing failure when `anchored` and `smoothed` are used as metric names and label names. #17353
+* [BUGFIX] PromQL: Fix formatting of range vector selectors with `smoothed`/`anchored` modifier. #17354
+
+## 3.7.1 / 2025-10-16
+
+* [BUGFIX] OTLP: Prefix `key_` to label name when translating an OTel attribute name starting with a single underscore, and keep multiple consecutive underscores in label name when translating an OTel attribute name. This reverts the breaking changes introduced in 3.7.0. #17344
+>>>>>>> 7f2e7c86f (prepare release 3.7.2 (#17385))
 
 * [BUGFIX] Config: Infer valid escaping scheme when scrape config validation scheme is set. #16923
 * [BUGFIX] PromQL: Fix info function on churning series. #17135
