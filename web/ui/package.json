@@ -3,6 +3,7 @@
   "description": "Monorepo for the Prometheus UI",
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
   "version": "0.306.0",
 =======
   "version": "0.307.0",
@@ -10,6 +11,9 @@
 =======
   "version": "0.307.2",
 >>>>>>> 7f2e7c86f (prepare release 3.7.2 (#17385))
+=======
+  "version": "0.307.3",
+>>>>>>> 0a41f0000 (prepare release 3.7.3 (#17428))
   "private": true,
   "scripts": {
     "build": "bash build_ui.sh --all",
