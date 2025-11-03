@@ -1434,7 +1434,7 @@ func intersection(oldBlocks, actualBlocks []string) (intersection []string) {
 			intersection = append(intersection, e)
 		}
 	}
-	return
+	return intersection
 }
 
 // mockCompactorFailing creates a new empty block on every write and fails when reached the max allowed total.
@@ -2742,7 +2742,7 @@ func TestDBReadOnly_Querier_NoAlteration(t *testing.T) {
 		if runtime.GOOS != "windows" {
 			hash = testutil.DirHash(t, dir)
 		}
-		return
+		return hash
 	}
 
 	spinUpQuerierAndCheck := func(dir, sandboxDir string, chunksCount int) {
