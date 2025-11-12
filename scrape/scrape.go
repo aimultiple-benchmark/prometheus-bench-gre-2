@@ -212,8 +212,13 @@ func newScrapePool(cfg *config.ScrapeConfig, app storage.Appendable, offsetSeed 
 			opts.timeout,
 			opts.alwaysScrapeClassicHist,
 			opts.convertClassicHistToNHCB,
+<<<<<<< HEAD
 			options.EnableNativeHistogramsIngestion,
 			options.EnableCreatedTimestampZeroIngestion,
+=======
+			cfg.ScrapeNativeHistogramsEnabled(),
+			options.EnableStartTimestampZeroIngestion,
+>>>>>>> f50ff0a40 (feat: rename CreatedTimestamp to StartTimestamp (#17523))
 			options.EnableTypeAndUnitLabels,
 			options.ExtraMetrics,
 			options.AppendMetadata,
@@ -935,7 +940,7 @@ type scrapeLoop struct {
 
 	alwaysScrapeClassicHist  bool
 	convertClassicHistToNHCB bool
-	enableCTZeroIngestion    bool
+	enableSTZeroIngestion    bool
 	enableTypeAndUnitLabels  bool
 	fallbackScrapeProtocol   string
 
@@ -1248,8 +1253,13 @@ func newScrapeLoop(ctx context.Context,
 	timeout time.Duration,
 	alwaysScrapeClassicHist bool,
 	convertClassicHistToNHCB bool,
+<<<<<<< HEAD
 	enableNativeHistogramIngestion bool,
 	enableCTZeroIngestion bool,
+=======
+	enableNativeHistogramScraping bool,
+	enableSTZeroIngestion bool,
+>>>>>>> f50ff0a40 (feat: rename CreatedTimestamp to StartTimestamp (#17523))
 	enableTypeAndUnitLabels bool,
 	reportExtraMetrics bool,
 	appendMetadataToWAL bool,
@@ -1283,6 +1293,7 @@ func newScrapeLoop(ctx context.Context,
 	}
 
 	sl := &scrapeLoop{
+<<<<<<< HEAD
 		scraper:                        sc,
 		buffers:                        buffers,
 		cache:                          cache,
@@ -1316,6 +1327,41 @@ func newScrapeLoop(ctx context.Context,
 		skipOffsetting:                 skipOffsetting,
 		validationScheme:               validationScheme,
 		escapingScheme:                 escapingScheme,
+=======
+		scraper:                       sc,
+		buffers:                       buffers,
+		cache:                         cache,
+		appender:                      appender,
+		symbolTable:                   symbolTable,
+		sampleMutator:                 sampleMutator,
+		reportSampleMutator:           reportSampleMutator,
+		stopped:                       make(chan struct{}),
+		offsetSeed:                    offsetSeed,
+		l:                             l,
+		parentCtx:                     ctx,
+		appenderCtx:                   appenderCtx,
+		honorTimestamps:               honorTimestamps,
+		trackTimestampsStaleness:      trackTimestampsStaleness,
+		enableCompression:             enableCompression,
+		sampleLimit:                   sampleLimit,
+		bucketLimit:                   bucketLimit,
+		maxSchema:                     maxSchema,
+		labelLimits:                   labelLimits,
+		interval:                      interval,
+		timeout:                       timeout,
+		alwaysScrapeClassicHist:       alwaysScrapeClassicHist,
+		convertClassicHistToNHCB:      convertClassicHistToNHCB,
+		enableSTZeroIngestion:         enableSTZeroIngestion,
+		enableTypeAndUnitLabels:       enableTypeAndUnitLabels,
+		fallbackScrapeProtocol:        fallbackScrapeProtocol,
+		enableNativeHistogramScraping: enableNativeHistogramScraping,
+		reportExtraMetrics:            reportExtraMetrics,
+		appendMetadataToWAL:           appendMetadataToWAL,
+		metrics:                       metrics,
+		skipOffsetting:                skipOffsetting,
+		validationScheme:              validationScheme,
+		escapingScheme:                escapingScheme,
+>>>>>>> f50ff0a40 (feat: rename CreatedTimestamp to StartTimestamp (#17523))
 	}
 	sl.ctx, sl.cancel = context.WithCancel(ctx)
 
@@ -1639,7 +1685,7 @@ func (sl *scrapeLoop) append(app storage.Appender, b []byte, contentType string,
 		EnableTypeAndUnitLabels:                 sl.enableTypeAndUnitLabels,
 		ConvertClassicHistogramsToNHCB:          sl.convertClassicHistToNHCB,
 		KeepClassicOnClassicAndNativeHistograms: sl.alwaysScrapeClassicHist,
-		OpenMetricsSkipCTSeries:                 sl.enableCTZeroIngestion,
+		OpenMetricsSkipSTSeries:                 sl.enableSTZeroIngestion,
 		FallbackContentType:                     sl.fallbackScrapeProtocol,
 	})
 	if p == nil {
@@ -1780,21 +1826,21 @@ loop:
 		if seriesAlreadyScraped && parsedTimestamp == nil {
 			err = storage.ErrDuplicateSampleForTimestamp
 		} else {
-			if sl.enableCTZeroIngestion {
-				if ctMs := p.CreatedTimestamp(); ctMs != 0 {
+			if sl.enableSTZeroIngestion {
+				if stMs := p.StartTimestamp(); stMs != 0 {
 					if isHistogram {
 						if h != nil {
-							ref, err = app.AppendHistogramCTZeroSample(ref, lset, t, ctMs, h, nil)
+							ref, err = app.AppendHistogramSTZeroSample(ref, lset, t, stMs, h, nil)
 						} else {
-							ref, err = app.AppendHistogramCTZeroSample(ref, lset, t, ctMs, nil, fh)
+							ref, err = app.AppendHistogramSTZeroSample(ref, lset, t, stMs, nil, fh)
 						}
 					} else {
-						ref, err = app.AppendCTZeroSample(ref, lset, t, ctMs)
+						ref, err = app.AppendSTZeroSample(ref, lset, t, stMs)
 					}
-					if err != nil && !errors.Is(err, storage.ErrOutOfOrderCT) { // OOO is a common case, ignoring completely for now.
-						// CT is an experimental feature. For now, we don't need to fail the
+					if err != nil && !errors.Is(err, storage.ErrOutOfOrderST) { // OOO is a common case, ignoring completely for now.
+						// ST is an experimental feature. For now, we don't need to fail the
 						// scrape on errors updating the created timestamp, log debug.
-						sl.l.Debug("Error when appending CT in scrape loop", "series", string(met), "ct", ctMs, "t", t, "err", err)
+						sl.l.Debug("Error when appending ST in scrape loop", "series", string(met), "ct", stMs, "t", t, "err", err)
 					}
 				}
 			}
@@ -1892,7 +1938,7 @@ loop:
 			if !seriesCached || lastMeta.lastIterChange == sl.cache.iter {
 				// In majority cases we can trust that the current series/histogram is matching the lastMeta and lastMFName.
 				// However, optional TYPE etc metadata and broken OM text can break this, detect those cases here.
-				// TODO(bwplotka): Consider moving this to parser as many parser users end up doing this (e.g. CT and NHCB parsing).
+				// TODO(bwplotka): Consider moving this to parser as many parser users end up doing this (e.g. ST and NHCB parsing).
 				if isSeriesPartOfFamily(lset.Get(labels.MetricName), lastMFName, lastMeta.Type) {
 					if _, merr := app.UpdateMetadata(ref, lset, lastMeta.Metadata); merr != nil {
 						// No need to fail the scrape on errors appending metadata.

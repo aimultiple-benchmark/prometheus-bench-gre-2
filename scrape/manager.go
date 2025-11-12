@@ -85,9 +85,13 @@ type Options struct {
 	DiscoveryReloadInterval model.Duration
 	// Option to enable the ingestion of the created timestamp as a synthetic zero sample.
 	// See: https://github.com/prometheus/proposals/blob/main/proposals/2023-06-13_created-timestamp.md
+<<<<<<< HEAD
 	EnableCreatedTimestampZeroIngestion bool
 	// Option to enable the ingestion of native histograms.
 	EnableNativeHistogramsIngestion bool
+=======
+	EnableStartTimestampZeroIngestion bool
+>>>>>>> f50ff0a40 (feat: rename CreatedTimestamp to StartTimestamp (#17523))
 
 	// EnableTypeAndUnitLabels
 	EnableTypeAndUnitLabels bool
