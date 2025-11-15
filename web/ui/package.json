@@ -1,7 +1,11 @@
 {
   "name": "prometheus-io",
   "description": "Monorepo for the Prometheus UI",
+<<<<<<< HEAD
   "version": "0.306.0",
+=======
+  "version": "0.307.0",
+>>>>>>> 09814effe (chore(release): prepare for 3.7 release (#17330))
   "private": true,
   "scripts": {
     "build": "bash build_ui.sh --all",
