@@ -1444,7 +1444,7 @@ func BenchmarkSampleSend(b *testing.B) {
 			defer m.Stop()
 
 			b.ResetTimer()
-			for i := 0; i < b.N; i++ {
+			for i := 0; b.Loop(); i++ {
 				m.Append(samples)
 				m.UpdateSeriesSegment(series, i+1) // simulate what wlog.Watcher.garbageCollectSeries does
 				m.SeriesReset(i + 1)
@@ -1492,7 +1492,7 @@ func BenchmarkStoreSeries(b *testing.B) {
 
 	for _, tc := range testCases {
 		b.Run(tc.name, func(b *testing.B) {
-			for i := 0; i < b.N; i++ {
+			for b.Loop() {
 				c := NewTestWriteClient(remoteapi.WriteV1MessageType)
 				dir := b.TempDir()
 				cfg := config.DefaultQueueConfig
@@ -1940,7 +1940,7 @@ func BenchmarkBuildWriteRequest(b *testing.B) {
 		pBuf := proto.NewBuffer(nil)
 
 		totalSize := 0
-		for i := 0; i < b.N; i++ {
+		for b.Loop() {
 			populateTimeSeries(batch, seriesBuff, true, true)
 			req, _, _, err := buildWriteRequest(noopLogger, seriesBuff, nil, pBuf, nil, cEnc, compression.Snappy)
 			if err != nil {
@@ -1981,7 +1981,7 @@ func BenchmarkBuildV2WriteRequest(b *testing.B) {
 		pBuf := []byte{}
 
 		totalSize := 0
-		for i := 0; i < b.N; i++ {
+		for b.Loop() {
 			populateV2TimeSeries(&symbolTable, batch, seriesBuff, true, true, false)
 			req, _, _, err := buildV2WriteRequest(noopLogger, seriesBuff, symbolTable.Symbols(), &pBuf, nil, cEnc, "snappy")
 			if err != nil {
@@ -2373,7 +2373,7 @@ func BenchmarkBuildTimeSeries(b *testing.B) {
 	// Send one sample per series, which is the typical remote_write case
 	const numSamples = 10000
 	filter := func(ts prompb.TimeSeries) bool { return filterTsLimit(99, ts) }
-	for i := 0; i < b.N; i++ {
+	for b.Loop() {
 		samples := createProtoTimeseriesWithOld(numSamples, 100, extraLabels...)
 		_, _, result, _, _, _ := buildTimeSeries(samples, filter)
 		require.NotNil(b, result)
