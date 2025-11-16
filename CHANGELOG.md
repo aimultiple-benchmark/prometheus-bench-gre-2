@@ -4,8 +4,15 @@
 <<<<<<< HEAD
 <<<<<<< HEAD
 ## main / unreleased
+<<<<<<< HEAD
 =======
 =======
+=======
+
+* [FEATURE] Templates: Add urlQueryEscape to template functions. #17403
+* [BUGFIX] TSDB: Register `prometheus_tsdb_sample_ooo_delta` metric properly. #17477
+
+>>>>>>> 2e609511b (Register missing metric prometheus_tsdb_sample_ooo_delta (#17477))
 ## 3.7.3 / 2025-10-29
 
 * [BUGFIX] UI: Revert changed (and breaking) redirect behavior for `-web.external-url` if `-web.route-prefix` is configured, which was introduced in #17240. #17389
