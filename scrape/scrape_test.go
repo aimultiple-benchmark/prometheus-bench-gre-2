@@ -3277,9 +3277,15 @@ func TestTargetScraperScrapeOK(t *testing.T) {
 					"Expected Accept header to prefer application/vnd.google.protobuf.")
 			}
 
+<<<<<<< HEAD
 			contentTypes := strings.Split(accept, ",")
 			for _, ct := range contentTypes {
 				match := qValuePattern.FindStringSubmatch(ct)
+=======
+			contentTypes := strings.SplitSeq(accept, ",")
+			for st := range contentTypes {
+				match := qValuePattern.FindStringSubmatch(st)
+>>>>>>> f50ff0a40 (feat: rename CreatedTimestamp to StartTimestamp (#17523))
 				require.Len(t, match, 3)
 				qValue, err := strconv.ParseFloat(match[1], 64)
 				require.NoError(t, err, "Error parsing q value")

@@ -471,7 +471,7 @@ func TestPrometheusConverter_AddSummaryDataPoints(t *testing.T) {
 							model.MetricNameLabel, "test_summary"+sumStr,
 						),
 						t:  convertTimeStamp(ts),
-						ct: convertTimeStamp(ts),
+						st: convertTimeStamp(ts),
 						v:  0,
 					},
 					{
@@ -480,7 +480,7 @@ func TestPrometheusConverter_AddSummaryDataPoints(t *testing.T) {
 							model.MetricNameLabel, "test_summary"+countStr,
 						),
 						t:  convertTimeStamp(ts),
-						ct: convertTimeStamp(ts),
+						st: convertTimeStamp(ts),
 						v:  0,
 					},
 				}
@@ -515,7 +515,7 @@ func TestPrometheusConverter_AddSummaryDataPoints(t *testing.T) {
 						ls: labels.FromStrings(append(scopeLabels,
 							model.MetricNameLabel, "test_summary"+sumStr)...),
 						t:  convertTimeStamp(ts),
-						ct: convertTimeStamp(ts),
+						st: convertTimeStamp(ts),
 						v:  0,
 					},
 					{
@@ -523,7 +523,7 @@ func TestPrometheusConverter_AddSummaryDataPoints(t *testing.T) {
 						ls: labels.FromStrings(append(scopeLabels,
 							model.MetricNameLabel, "test_summary"+countStr)...),
 						t:  convertTimeStamp(ts),
-						ct: convertTimeStamp(ts),
+						st: convertTimeStamp(ts),
 						v:  0,
 					},
 				}
@@ -695,7 +695,7 @@ func TestPrometheusConverter_AddHistogramDataPoints(t *testing.T) {
 							model.MetricNameLabel, "test_hist"+countStr,
 						),
 						t:  convertTimeStamp(ts),
-						ct: convertTimeStamp(ts),
+						st: convertTimeStamp(ts),
 						v:  0,
 					},
 					{
@@ -705,7 +705,7 @@ func TestPrometheusConverter_AddHistogramDataPoints(t *testing.T) {
 							model.BucketLabel, "+Inf",
 						),
 						t:  convertTimeStamp(ts),
-						ct: convertTimeStamp(ts),
+						st: convertTimeStamp(ts),
 						v:  0,
 					},
 				}
@@ -740,7 +740,7 @@ func TestPrometheusConverter_AddHistogramDataPoints(t *testing.T) {
 						ls: labels.FromStrings(append(scopeLabels,
 							model.MetricNameLabel, "test_hist"+countStr)...),
 						t:  convertTimeStamp(ts),
-						ct: convertTimeStamp(ts),
+						st: convertTimeStamp(ts),
 						v:  0,
 					},
 					{
@@ -749,7 +749,7 @@ func TestPrometheusConverter_AddHistogramDataPoints(t *testing.T) {
 							model.MetricNameLabel, "test_hist_bucket",
 							model.BucketLabel, "+Inf")...),
 						t:  convertTimeStamp(ts),
-						ct: convertTimeStamp(ts),
+						st: convertTimeStamp(ts),
 						v:  0,
 					},
 				}
